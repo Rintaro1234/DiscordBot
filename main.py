@@ -1,6 +1,4 @@
-import queue
 from tokenize import Intnumber
-from types import NoneType
 import discord 
 import json
 import requests
@@ -8,7 +6,6 @@ import romkan
 import wave
 import os
 import threading
-import time
 
 from discord.ext import commands
 
