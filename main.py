@@ -28,7 +28,7 @@ async def on_message(message):
         ChatChannel = message.channel
         #generate_wav(message.content)
         #bot.voice_clients[0].play(discord.FFmpegPCMAudio(executable="C:\\Program Files\\ffmpeg-master-latest-win64-gpl-shared\\bin\\ffmpeg.exe", source="./audio.wav"))
-        await ChatChannel.send(message.content)
+        #await ChatChannel.send(message.content)
 
 isConnect:bool = False
 voiceClient:discord.VoiceClient
@@ -38,8 +38,8 @@ async def on_voice_state_update(data, before, after):
     global isConnect
     global voiceClient
     if before.channel != after.channel:
-        botRoom = bot.get_channel(950397520859758642)
-        voiceRoom = bot.get_channel(936920395116843051)
+        botRoom = bot.get_channel(951458703847088140)#950397520859758642)
+        voiceRoom = bot.get_channel(950376706731020311)#936920395116843051)
         if isConnect != True and data.bot != True:
             voiceClient = await voiceRoom.connect()
             isConnect = True
