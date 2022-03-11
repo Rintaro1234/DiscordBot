@@ -90,20 +90,21 @@ def playSound():
 
 # 音声ファイルの作成
 def generate_wav(text, speaker=0, filepath='./audiosources/audio.wav'):
-    host = 'localhost'
-    port = 50021
-    params = ( ('text', " " + text), ('speaker', speaker),)
-    response1 = requests.post(
-        f'http://{host}:{port}/audio_query',
-        params=params
-    )
-    headers = {'Content-Type': 'application/json',}
-    response2 = requests.post(
-        f'http://{host}:{port}/synthesis',
-        headers=headers,
-        params=params,
-        data=json.dumps(response1.json())
-    )
+    # host = 'localhost'
+    # port = 50021
+    # params = ( ('text', " " + text), ('speaker', speaker),)
+    # response1 = requests.post(
+    #     f'http://{host}:{port}/audio_query',
+    #     params=params
+    # )
+    # headers = {'Content-Type': 'application/json',}
+    # response2 = requests.post(
+    #     f'http://{host}:{port}/synthesis',
+    #     headers=headers,
+    #     params=params,
+    #     data=json.dumps(response1.json())
+    # )
+    response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=U_4463J7F-B9f-5&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=1&text=" + text)
 
     wf = wave.open(filepath, 'wb')
     wf.setnchannels(1)
