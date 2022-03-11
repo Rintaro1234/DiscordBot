@@ -83,7 +83,8 @@ def playSound():
     t = threading.Timer(0.5, playSound)
     t.start()
     if len(QueueSound) != 0 and voiceClient.is_playing() != True and voiceClient.is_connected():
-        voiceClient.play(discord.FFmpegPCMAudio(executable="C:\\Program Files\\ffmpeg-master-latest-win64-gpl-shared\\bin\\ffmpeg.exe", source=QueueSound[len(QueueSound) - 1]))
+        # windows voiceClient.play(discord.FFmpegPCMAudio(executable="C:\\Program Files\\ffmpeg-master-latest-win64-gpl-shared\\bin\\ffmpeg.exe", source=QueueSound[len(QueueSound) - 1]))
+        voiceClient.play(discord.FFmpegPCMAudio(source=QueueSound[len(QueueSound) - 1]))
         QueueSound.pop()   
 
 
