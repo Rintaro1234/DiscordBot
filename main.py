@@ -89,7 +89,7 @@ def playSound():
 
 
 # 音声ファイルの作成
-def generate_wav(text, speaker=0, filepath='./audiosources/audio.wav'):
+def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
     # host = 'localhost'
     # port = 50021
     # params = ( ('text', " " + text), ('speaker', speaker),)
