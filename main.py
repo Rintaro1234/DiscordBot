@@ -38,8 +38,12 @@ async def on_voice_state_update(data, before, after):
     global isConnect
     global voiceClient
     if before.channel != after.channel:
-        botRoom = bot.get_channel(950397520859758642)#951458703847088140)
-        voiceRoom = bot.get_channel(936920395116843051)#950376706731020311)
+        #デバック用
+        #botRoom = bot.get_channel(950397520859758642)
+        #voiceRoom = bot.get_channel(936920395116843051)
+        #実装用
+        botRoom = bot.get_channel(951458703847088140)
+        voiceRoom = bot.get_channel(950376706731020311)
         if isConnect != True and data.bot != True:
             voiceClient = await voiceRoom.connect()
             isConnect = True
