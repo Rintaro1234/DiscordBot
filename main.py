@@ -10,7 +10,7 @@ import threading
 from discord.ext import commands
 
 intents = discord.Intents.all() 
-bot = commands.Bot(intents=intents)
+bot = commands.Bot(intents=intents, command_prefix="$")
 voice:discord.VoiceChannel
 ChatChannel:discord.channel
 QueueSound = []
@@ -38,8 +38,8 @@ async def on_voice_state_update(data, before, after):
     global isConnect
     global voiceClient
     if before.channel != after.channel:
-        botRoom = bot.get_channel(951458703847088140)
-        voiceRoom = bot.get_channel(950376706731020311)
+        botRoom = bot.get_channel(950397520859758642)#951458703847088140)
+        voiceRoom = bot.get_channel(936920395116843051)#950376706731020311)
         if isConnect != True and data.bot != True:
             voiceClient = await voiceRoom.connect()
             isConnect = True
@@ -55,8 +55,7 @@ async def on_voice_state_update(data, before, after):
 
         audiopath = "./audiosources/" + str(data.id) + ".wav"
         if os.path.isfile(audiopath) != True:
-            voiceText = romkan.to_katakana(data.name)
-            generate_wav(voiceText, filepath=audiopath)
+            generate_wav(data.name, filepath=audiopath)
 
         # 入室通知
         if after.channel != None and after.channel.id == voiceRoom.id and data.name != bot.user.name:
@@ -78,6 +77,24 @@ async def on_voice_state_update(data, before, after):
             #voiceClient.play(discord.FFmpegPCMAudio(executable="C:\\Program Files\\ffmpeg-master-latest-win64-gpl-shared\\bin\\ffmpeg.exe", source=exitpath))
             await botRoom.send(data.name + "が退出しました。")
 
+# 音声の手動入力
+@bot.command()
+async def set(ctx, *arg):
+    path="./audiosources/" + ctx.author.id + ".wav"
+    generate_wav(arg, filepath=path)
+    await ctx.send("あなたの名前を「" + arg + "」で生成しました！")
+    await ctx.send(file=discord.File(path))
+
+# 音声があるかの確認
+@bot.command()
+async def check(ctx):
+  path="./audiosources/" + ctx.author.id + ".wav"
+  if os.path.isfile(path) != True:
+    await ctx.send("あなたの名前は登録されていません…")
+  else:
+    await ctx.send("登録済みです！")
+    await ctx.send(file=discord.File(path))
+            
 # 音キューの再生
 def playSound():
     t = threading.Timer(0.5, playSound)
@@ -85,12 +102,13 @@ def playSound():
     if len(QueueSound) != 0 and voiceClient.is_playing() != True and voiceClient.is_connected():
         # windows voiceClient.play(discord.FFmpegPCMAudio(executable="C:\\Program Files\\ffmpeg-master-latest-win64-gpl-shared\\bin\\ffmpeg.exe", source=QueueSound[len(QueueSound) - 1]))
         voiceClient.play(discord.FFmpegPCMAudio(source=QueueSound[len(QueueSound) - 1]))
-        QueueSound.pop()   
-
+        QueueSound.pop() 
 
 # 音声ファイルの作成
 def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
-    response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=U_4463J7F-B9f-5&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=1&text=" + text)
+    text = romkan.to_katakana(text)
+    text = text.replace('0', 'ゼロ').replace('1', 'イチ').replace('2', 'ニ').replace('3', 'サン').replace('4', 'ヨン').replace('5', 'ゴー').replace('6', 'ロク').replace('7', 'ナナ').replace('8', 'ハチ').replace('9', 'キュウ')
+    response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=U_4463J7F-B9f-5&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=0.8&text=" + text)
 
     wf = wave.open(filepath, 'wb')
     wf.setnchannels(1)
@@ -99,4 +117,4 @@ def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
     wf.writeframes(response2.content)
     wf.close()
 
-bot.run(DISCORD_BOT_TOKEN)
+bot.run(os.environ['TOKEN'])
