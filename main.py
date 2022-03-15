@@ -74,7 +74,7 @@ async def on_voice_state_update(data, before, after):
 # 音声の手動入力
 @bot.command()
 async def set(ctx, *arg):
-    path="./audiosources/" + ctx.author.id + ".wav"
+    path="./audiosources/" + str(ctx.author.id) + ".wav"
     generate_wav(arg, filepath=path)
     await ctx.send("あなたの名前を「" + arg + "」で生成しました！")
     await ctx.send(file=discord.File(path))
