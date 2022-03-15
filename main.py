@@ -12,7 +12,6 @@ from discord.ext import commands
 intents = discord.Intents.all() 
 bot = commands.Bot(intents=intents, command_prefix="$")
 voice:discord.VoiceChannel
-ChatChannel:discord.channel
 QueueSound = []
 
 @bot.event
@@ -20,15 +19,6 @@ async def on_ready():
   print("logged in as " + bot.user.name)
   t1 = threading.Thread(target=playSound)
   t1.start()
-
-@bot.event
-async def on_message(message):
-    if message.author.bot != True:
-        global ChatChannel
-        ChatChannel = message.channel
-        #generate_wav(message.content)
-        #bot.voice_clients[0].play(discord.FFmpegPCMAudio(executable="C:\\Program Files\\ffmpeg-master-latest-win64-gpl-shared\\bin\\ffmpeg.exe", source="./audio.wav"))
-        #await ChatChannel.send(message.content)
 
 isConnect:bool = False
 voiceClient:discord.VoiceClient
