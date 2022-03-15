@@ -108,7 +108,7 @@ def playSound():
 def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
     text = romkan.to_katakana(text)
     text = text.replace('0', 'ゼロ').replace('1', 'イチ').replace('2', 'ニ').replace('3', 'サン').replace('4', 'ヨン').replace('5', 'ゴー').replace('6', 'ロク').replace('7', 'ナナ').replace('8', 'ハチ').replace('9', 'キュウ')
-    response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=U_4463J7F-B9f-5&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=0.8&text=" + text)
+    response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=U_4463J7F-B9f-5&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=1.0&text=" + text)
 
     wf = wave.open(filepath, 'wb')
     wf.setnchannels(1)
