@@ -1,5 +1,7 @@
 psycopg2==2.9.3
 discord==1.7.3
 discord.py==1.7.3
+py-cord==2.0.0b5
+PyNaCl==1.4.0
 requests==2.27.1
 romkan==0.2.1
