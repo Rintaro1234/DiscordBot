@@ -118,5 +118,4 @@ def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
     wf.writeframes(response2.content)
     wf.close()
 
-#bot.run(os.environ['TOKEN'])
-bot.run("OTUwNjYzNDUwNDYyNDAwNTQz.YicMVQ.UfDEYhLc3RTtM_59hFeR2rM2TzM")
+bot.run(os.environ['TOKEN'])
