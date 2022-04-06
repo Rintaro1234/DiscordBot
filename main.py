@@ -8,15 +8,15 @@ import romkan
 import wave
 import os
 import threading
-import psycopg2
 import re
+import sys
 
 from discord.ext import commands
 
 intents = discord.Intents.all() 
 bot = commands.Bot(intents=intents, command_prefix="$")
-DATABASE_URL = os.environ['DATABASE_URL']
 QueueSound = []
+args = sys.argv
 
 @bot.event
 async def on_ready():
@@ -32,12 +32,14 @@ async def on_voice_state_update(data, before, after):
     global isConnect
     global voiceClient
     if before.channel != after.channel:
-        #デバック用
-        #botRoom = bot.get_channel(950397520859758642)
-        #voiceRoom = bot.get_channel(936920395116843051)
-        #実装用
-        botRoom = bot.get_channel(951458703847088140)
-        voiceRoom = bot.get_channel(950376706731020311)
+        if args[1] != 0:
+            #デバック用
+            botRoom = bot.get_channel(950397520859758642)
+            voiceRoom = bot.get_channel(936920395116843051)
+        else:
+            #実装用
+            botRoom = bot.get_channel(951458703847088140)
+            voiceRoom = bot.get_channel(950376706731020311)
         # 音声チャットに入っていなかったら入場する
         if isConnect != True and data.bot != True:
             voiceClient = await voiceRoom.connect()
@@ -56,22 +58,7 @@ async def on_voice_state_update(data, before, after):
         #その人の音源ファイルがあるか？
         audiopath = "./audiosources/" + str(data.id) + ".wav"
         if os.path.isfile(audiopath) != True:
-            # データベースにその人の名前が登録されているかの確認
-            with psycopg2.connect(DATABASE_URL) as conn:
-                with conn.cursor() as curs:
-                    curs.execute('SELECT * FROM username')
-                    isContained = False
-                    # データベースにその人のIDがあるかチェック
-                    for row in curs:
-                        if row[0] == str(data.id):
-                            # 含まれていたら登録された名前でID作成
-                            generate_wav(row[1], filepath=audiopath)
-                            isContained = True
-                            break
-                    # 含まれていなかったら新規登録
-                    if isContained == False:
-                        curs.execute("INSERT INTO username(id, name) VALUES(%s, %s)", (data.id, data.name))
-                        generate_wav(data.name, filepath=audiopath)
+            generate_wav(data.name, filepath=audiopath)
 
         # 入室通知
         if after.channel != None and after.channel.id == voiceRoom.id and data.bot != True:
@@ -95,22 +82,6 @@ async def on_voice_state_update(data, before, after):
 @bot.command()
 async def set(ctx, arg):
     path="./audiosources/" + str(ctx.author.id) + ".wav"
-    # データベースにその人の名前が登録されているかの確認
-    with psycopg2.connect(DATABASE_URL) as conn:
-        with conn.cursor() as curs:
-            curs.execute('SELECT * FROM username')
-            isContained = False
-            # データベースにその人のIDがあるかチェック
-            for row in curs:
-                if row[0] == str(ctx.author.id):
-                    # すでに作成済みだったら更新する
-                    curs.execute("UPDATE username SET name = %s WHERE id = %s", (arg, str(ctx.author.id)))
-                    isContained = True
-                    break
-            # 含まれていなかったら新規登録
-            if isContained == False:
-                curs.execute("INSERT INTO username(id, name) VALUES(%s, %s)", (str(ctx.author.id), arg))
-
     # 名前作成
     generate_wav(arg, filepath=path)
     
@@ -120,24 +91,11 @@ async def set(ctx, arg):
 # 音声があるかの確認
 @bot.command()
 async def check(ctx):
-    with psycopg2.connect(DATABASE_URL) as conn:
-        with conn.cursor() as curs:
-            curs.execute('SELECT * FROM username')
-            isContained = False
-            # データベースにその人のIDがあるかチェック
-            for row in curs:
-                if row[0] == str(ctx.author.id):
-                    # すでに作成済みだったら更新する
-                    await ctx.send("あなたの名前は「" + row[1] + "」で登録されています！")
-                    isContained = True
-                    break
-            # 含まれていなかったら新規登録
-            if isContained == False:
-                await ctx.send("あなたの名前は登録されていません...")
-                return
     path="./audiosources/" + str(ctx.author.id) + ".wav"
     if os.path.isfile(path) == True:
         await ctx.send(file=discord.File(path))
+    else:
+        await ctx.send("あなたの名前は登録されていません...")
             
 # 音キューの再生
 def playSound():
@@ -151,8 +109,8 @@ def playSound():
 def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
     text = romkan.to_katakana(text)
     text = text.replace('0', 'ゼロ').replace('1', 'イチ').replace('2', 'ニ').replace('3', 'サン').replace('4', 'ヨン').replace('5', 'ゴー').replace('6', 'ロク').replace('7', 'ナナ').replace('8', 'ハチ').replace('9', 'キュウ')
-    response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=" + os.environ['VoiceToken'] + "&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=1.0&text=" + text)
-
+    #response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=" + os.environ['VoiceToken'] + "&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=1.0&text=" + text)
+    response2 = requests.post("https://api.su-shiki.com/v2/voicevox/audio/?key=U_4463J7F-B9f-5&speaker=" + str(speaker) + "&pitch=0&intonationScale=1&speed=0.9&text=" + text)
     wf = wave.open(filepath, 'wb')
     wf.setnchannels(1)
     wf.setsampwidth(2)
@@ -160,4 +118,5 @@ def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
     wf.writeframes(response2.content)
     wf.close()
 
-bot.run(os.environ['TOKEN'])
+#bot.run(os.environ['TOKEN'])
+bot.run("OTUwNjYzNDUwNDYyNDAwNTQz.YicMVQ.FPq3d7vswRmKsAj7vvsQv_Izigg")
