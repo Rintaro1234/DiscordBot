@@ -32,7 +32,7 @@ async def on_voice_state_update(data, before, after):
     global isConnect
     global voiceClient
     if before.channel != after.channel:
-        if args[1] != 0:
+        if args[1] == str(0):
             #デバック用
             botRoom = bot.get_channel(950397520859758642)
             voiceRoom = bot.get_channel(936920395116843051)
@@ -118,4 +118,5 @@ def generate_wav(text, speaker=2, filepath='./audiosources/audio.wav'):
     wf.writeframes(response2.content)
     wf.close()
 
-bot.run(os.environ['TOKEN'])
+#bot.run(os.environ['TOKEN'])
+bot.run("OTUwNjYzNDUwNDYyNDAwNTQz.YicMVQ.UfDEYhLc3RTtM_59hFeR2rM2TzM")
